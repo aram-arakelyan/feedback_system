@@ -1,0 +1,9 @@
+# Ignore everything in target except the JAR file
+target/*
+!target/*.jar
+
+# Ignore IDE files and other unnecessary files
+*.iml
+.idea/
+.git/
+.mvn/

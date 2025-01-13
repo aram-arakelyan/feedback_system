@@ -1,0 +1,27 @@
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none # Disable auto schema generation since Flyway handles migrations
+    show-sql: true # Logs SQL statements to the console
+  flyway:
+    enabled: true
+    locations: classpath:db/migration # Location of Flyway migration scripts
+
+  security:
+    jwt:
+      secret-key: ${JWT_SECRET_KEY:default_secret_key} # Use environment variable or a default value
+      expiration-time: ${JWT_EXPIRATION_TIME:86400000} # Optional: environment variable for expiration time
+
+logging:
+  level:
+    org:
+      springframework: INFO # Adjust logging levels for debugging
+    com.example.feedback: DEBUG # Enable debug logs for your application
+
+server:
+  port: 8080 # The application runs on port 8080 by default
