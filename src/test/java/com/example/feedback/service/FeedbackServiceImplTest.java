@@ -51,16 +51,7 @@ class FeedbackServiceImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        SecurityContextHolder.setContext(securityContext);
 
-        Feedback feedback = new Feedback();
-        feedback.setId(1L);
-        // set other fields as needed
-        when(feedbackRepository.findById(1L)).thenReturn(Optional.of(feedback));
-    }
-
-    @BeforeEach
-    void setUpContext() {
         Authentication auth = new UsernamePasswordAuthenticationToken(
                 "testuser@example.com",
                 "password"
@@ -76,8 +67,13 @@ class FeedbackServiceImplTest {
 
         when(customerRepository.findByEmail("testuser@example.com"))
                 .thenReturn(Optional.of(mockUser));
-    }
 
+        // Mock Feedback for feedback repository
+        Feedback feedback = new Feedback();
+        feedback.setId(1L);
+
+        when(feedbackRepository.findById(1L)).thenReturn(Optional.of(feedback));
+    }
 
     @Nested
     @DisplayName("Tests for findByEstablishmentId")

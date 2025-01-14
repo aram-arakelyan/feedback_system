@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
@@ -40,6 +41,7 @@ public class CustomerServiceImpl implements CustomerService {
      * @throws SecurityException        If the password is invalid.
      */
     @Override
+    @Transactional
     public LoginResponseDTO login(CustomerDTO customerDto) {
         Customer customer = customerRepository.findByEmail(customerDto.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("Email not found"));
@@ -63,6 +65,7 @@ public class CustomerServiceImpl implements CustomerService {
      * @throws IllegalStateException If the email is already registered.
      */
     @Override
+    @Transactional
     public SignupResponseDTO saveUser(CustomerDTO customerDto) {
         customerRepository.findByEmail(customerDto.getEmail())
                 .ifPresent(customer -> {

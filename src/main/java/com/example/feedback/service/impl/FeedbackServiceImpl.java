@@ -11,6 +11,7 @@ import com.example.feedback.service.EstablishmentService;
 import com.example.feedback.service.FeedbackService;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -37,6 +38,7 @@ public class FeedbackServiceImpl implements FeedbackService {
      * @return A list of feedbacks.
      */
     @Override
+    @Transactional(readOnly = true)
     public List<FeedbackResponseDTO> findByEstablishmentId(Long establishmentId) {
         List<Feedback> feedbackList = feedbackRepository.findByEstablishmentId(establishmentId);
 
@@ -63,6 +65,7 @@ public class FeedbackServiceImpl implements FeedbackService {
      * @return The created feedback response.
      */
     @Override
+    @Transactional
     public FeedbackResponseDTO createFeedback(FeedbackDTO feedbackDTO) {
         Customer customer = getAuthenticatedUser();
 
@@ -98,6 +101,7 @@ public class FeedbackServiceImpl implements FeedbackService {
      * @param feedbackId The ID of the feedback to delete.
      */
     @Override
+    @Transactional
     public void deleteFeedbackForAuthenticatedCustomer(Long feedbackId) {
         Customer customer = getAuthenticatedUser();
 
