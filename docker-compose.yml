@@ -7,6 +7,7 @@ services:
     ports:
       - "8080:8080"
     environment:
+      SPRING_PROFILES_ACTIVE: "docker"
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/feedback_db
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: postgres
@@ -20,8 +21,6 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: feedback_db
-      POSTGRES_HOST_AUTH_METHOD: md5
-      POSTGRES_LISTEN_ADDRESSES: '*'
     ports:
       - "5432:5432"
     volumes:
