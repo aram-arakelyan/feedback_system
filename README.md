@@ -92,7 +92,7 @@ curl -X POST \
   -d '{
     "establishmentId": 2,
     "title": "Great Service",
-    "text_comment": "The staff was very helpful and friendly.",
+    "textComment": "The staff was very helpful and friendly.",
     "score": 5
   }'
 
@@ -102,7 +102,7 @@ Expected response:
 {
   "id": 1,
   "title": "Great Service",
-  "text_comment": "The staff was very helpful and friendly.",
+  "textComment": "The staff was very helpful and friendly.",
   "score": 5,
   "establishmentId": 2
 }
@@ -120,14 +120,14 @@ Expected response:
   {
     "id": 1,
     "title": "Great Service",
-    "text_comment": "The staff was very helpful and friendly.",
+    "textComment": "The staff was very helpful and friendly.",
     "score": 5,
     "establishmentId": 2
   },
   {
     "id": 2,
     "title": "Average Experience",
-    "text_comment": "The service was okay but can be improved.",
+    "textComment": "The service was okay but can be improved.",
     "score": 3,
     "establishmentId": 2
   }
@@ -141,8 +141,4 @@ curl -X DELETE \
   http://localhost:8080/api/v1/feedback/1 \
   -H "Authorization: Bearer <your-jwt-token>"
 
-```
-Expected response:
-```
-"Feedback deleted successfully."
 ```

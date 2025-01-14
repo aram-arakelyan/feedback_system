@@ -77,8 +77,8 @@ public class FeedbackController {
             @ApiResponse(responseCode = "500", description = "Unexpected internal server error")
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteFeedback(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteFeedback(@PathVariable Long id) {
         feedbackService.deleteFeedbackForAuthenticatedCustomer(id);
-        return ResponseEntity.ok("Feedback deleted successfully.");
+        return ResponseEntity.noContent().build();
     }
 }

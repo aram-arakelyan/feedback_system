@@ -168,14 +168,14 @@ class FeedbackControllerTest {
     class DeleteFeedbackTests {
 
         @Test
-        @DisplayName("Should return 200 when feedback is deleted successfully")
+        @DisplayName("Should return 204 when feedback is deleted successfully")
         void testDeleteFeedbackSuccess() throws Exception {
             Mockito.doNothing().when(feedbackService).deleteFeedbackForAuthenticatedCustomer(eq(1L));
 
             mockMvc.perform(delete("/api/v1/feedback/1")
                             .contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(status().isOk())
-                    .andExpect(content().string("Feedback deleted successfully."));
+                    .andExpect(status().isNoContent())
+                    .andExpect(content().string(""));
         }
 
         @Test
