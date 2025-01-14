@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: ${SPRING_DATASOURCE_URL}
-    username: ${SPRING_DATASOURCE_USERNAME}
-    password: ${SPRING_DATASOURCE_PASSWORD}
+    url: jdbc:postgresql://localhost:5432/feedback_db
+    username: postgres
+    password: postgres
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -14,7 +14,7 @@ spring:
 
   security:
     jwt:
-      secret-key: ${JWT_SECRET_KEY:default_secret_key} # Use environment variable or a default value
+      secret-key: ${JWT_SECRET_KEY} # Use environment variable or a default value
       expiration-time: ${JWT_EXPIRATION_TIME:86400000} # Optional: environment variable for expiration time
 
 logging:

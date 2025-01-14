@@ -108,7 +108,8 @@ public class FeedbackServiceImpl implements FeedbackService {
     }
 
     private Customer getAuthenticatedUser() {
-        String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+
         return customerRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("Authenticated user not found."));
     }

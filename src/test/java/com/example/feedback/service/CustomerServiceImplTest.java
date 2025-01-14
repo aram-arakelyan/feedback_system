@@ -1,6 +1,7 @@
 package com.example.feedback.service;
 
 import com.example.feedback.dto.CustomerDTO;
+import com.example.feedback.dto.LoginResponseDTO;
 import com.example.feedback.dto.SignupResponseDTO;
 import com.example.feedback.entity.Customer;
 import com.example.feedback.repository.CustomerRepository;
@@ -17,8 +18,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -37,38 +37,36 @@ class CustomerServiceImplTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        // Inject a valid Base64-encoded secret key
-        ReflectionTestUtils.setField(customerService, "jwtSecretKey", "dGVzdF9zZWNyZXRfa2V5Cg==");
-        ReflectionTestUtils.setField(customerService, "jwtExpirationTime", 86400000L); // 24 hours in milliseconds
+        ReflectionTestUtils.setField(customerService, "jwtSecretKey", "XOQ3Xn63ZNwX865KLcGxb6oqkO/nGtniWzkQZb3nUWI4y4oa6d20hh14JByIk8iq3ZnAluXwGKxi6MFKvXyq8g==");
+        ReflectionTestUtils.setField(customerService, "jwtExpirationTime", 86400000L);
     }
 
     @Nested
     @DisplayName("Tests for login")
     class LoginTests {
 
-//        @Test
-//        @DisplayName("Should return LoginResponseDTO when login is successful")
-//        void testLoginSuccess() {
-//            // Given
-//            Customer customer = new Customer();
-//            customer.setEmail("test@example.com");
-//            customer.setPassword("encodedPassword");
-//
-//            CustomerDTO customerDTO = new CustomerDTO();
-//            customerDTO.setEmail("test@example.com");
-//            customerDTO.setPassword("rawPassword");
-//
-//            when(customerRepository.findByEmail("test@example.com")).thenReturn(Optional.of(customer));
-//            when(passwordEncoder.matches("rawPassword", "encodedPassword")).thenReturn(true);
-//
-//            // When
-//            LoginResponseDTO response = customerService.login(customerDTO);
-//
-//            // Then
-//            assertEquals("fake-jwt-token", response.getToken()); // Replace with actual token logic if applicable
-//            verify(customerRepository, times(1)).findByEmail("test@example.com");
-//            verify(passwordEncoder, times(1)).matches("rawPassword", "encodedPassword");
-//        }
+        @Test
+        @DisplayName("Should return LoginResponseDTO when login is successful")
+        void testLoginSuccess() {
+            // Given
+            Customer customer = new Customer();
+            customer.setEmail("test@example.com");
+            customer.setPassword("encodedPassword");
+
+            CustomerDTO customerDTO = new CustomerDTO();
+            customerDTO.setEmail("test@example.com");
+            customerDTO.setPassword("rawPassword");
+
+            when(customerRepository.findByEmail("test@example.com")).thenReturn(Optional.of(customer));
+            when(passwordEncoder.matches("rawPassword", "encodedPassword")).thenReturn(true);
+
+            // When
+            LoginResponseDTO response = customerService.login(customerDTO);
+
+            // Then
+            assertNotNull(response.getToken());
+            assertTrue(response.getToken().startsWith("ey"));
+        }
 
         @Test
         @DisplayName("Should throw IllegalArgumentException when email is not found")

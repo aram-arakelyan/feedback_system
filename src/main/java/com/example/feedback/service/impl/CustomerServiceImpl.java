@@ -25,10 +25,10 @@ public class CustomerServiceImpl implements CustomerService {
     private final CustomerRepository customerRepository;
     private final PasswordEncoder passwordEncoder;
 
-    @Value("${security.jwt.secret-key:default_secret_key}")
+    @Value("${spring.security.jwt.secret-key}")
     private String jwtSecretKey;
 
-    @Value("${security.jwt.expiration-time:86400000}") // Default: 24 hours in milliseconds
+    @Value("${spring.security.jwt.expiration-time}") // Default: 24 hours in milliseconds
     private long jwtExpirationTime;
 
     /**

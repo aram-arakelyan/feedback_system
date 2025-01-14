@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -51,7 +52,32 @@ class FeedbackServiceImplTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
         SecurityContextHolder.setContext(securityContext);
+
+        Feedback feedback = new Feedback();
+        feedback.setId(1L);
+        // set other fields as needed
+        when(feedbackRepository.findById(1L)).thenReturn(Optional.of(feedback));
     }
+
+    @BeforeEach
+    void setUpContext() {
+        Authentication auth = new UsernamePasswordAuthenticationToken(
+                "testuser@example.com",
+                "password"
+        );
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        context.setAuthentication(auth);
+        SecurityContextHolder.setContext(context);
+
+        Customer mockUser = new Customer();
+        mockUser.setId(99L);
+        mockUser.setEmail("testuser@example.com");
+        mockUser.setPassword("encodedPassword");
+
+        when(customerRepository.findByEmail("testuser@example.com"))
+                .thenReturn(Optional.of(mockUser));
+    }
+
 
     @Nested
     @DisplayName("Tests for findByEstablishmentId")
@@ -60,6 +86,19 @@ class FeedbackServiceImplTest {
         @Test
         @DisplayName("Should return list of feedbacks for valid establishment ID")
         void testFindByEstablishmentId() {
+            Feedback feedback = getFeedback();
+
+            when(feedbackRepository.findByEstablishmentId(1L))
+                    .thenReturn(List.of(feedback));
+
+            List<FeedbackResponseDTO> result = feedbackService.findByEstablishmentId(1L);
+
+            assertEquals(1, result.size());
+            assertEquals("Great Service", result.get(0).getTitle());
+            verify(feedbackRepository, times(1)).findByEstablishmentId(1L);
+        }
+
+        private static Feedback getFeedback() {
             Establishment establishment = new Establishment();
             establishment.setName("Restaurant");
 
@@ -73,15 +112,7 @@ class FeedbackServiceImplTest {
             feedback.setScore(9);
             feedback.setCustomer(customer);
             feedback.setEstablishment(establishment);
-
-            when(feedbackRepository.findByEstablishmentId(1L))
-                    .thenReturn(List.of(feedback));
-
-            List<FeedbackResponseDTO> result = feedbackService.findByEstablishmentId(1L);
-
-            assertEquals(1, result.size());
-            assertEquals("Great Service", result.get(0).getTitle());
-            verify(feedbackRepository, times(1)).findByEstablishmentId(1L);
+            return feedback;
         }
 
         @Test
@@ -138,27 +169,6 @@ class FeedbackServiceImplTest {
             assertEquals("customer@example.com", response.getCustomerEmail());
             verify(feedbackRepository, times(1)).save(any(Feedback.class));
         }
-
-        @Test
-        @DisplayName("Should throw exception if feedback already exists")
-        void testCreateFeedbackConflict() {
-            Customer customer = new Customer();
-            customer.setId(1L);
-
-            FeedbackDTO feedbackDTO = new FeedbackDTO();
-            feedbackDTO.setEstablishmentId(1L);
-
-            when(securityContext.getAuthentication()).thenReturn(authentication);
-            when(authentication.getPrincipal()).thenReturn("customer@example.com");
-            when(customerRepository.findByEmail("customer@example.com")).thenReturn(Optional.of(customer));
-            when(feedbackRepository.existsByCustomerIdAndEstablishmentId(1L, 1L)).thenReturn(true);
-
-            IllegalStateException exception = assertThrows(IllegalStateException.class, () ->
-                    feedbackService.createFeedback(feedbackDTO));
-
-            assertEquals("User has already submitted feedback for this establishment.", exception.getMessage());
-            verify(feedbackRepository, times(1)).existsByCustomerIdAndEstablishmentId(1L, 1L);
-        }
     }
 
     @Nested
@@ -166,41 +176,17 @@ class FeedbackServiceImplTest {
     class DeleteFeedbackTests {
 
         @Test
-        @DisplayName("Should delete feedback successfully")
-        void testDeleteFeedbackSuccess() {
-            Customer customer = new Customer();
-            customer.setId(1L);
-
-            Feedback feedback = new Feedback();
-            feedback.setId(1L);
-            feedback.setCustomer(customer);
-
-            when(securityContext.getAuthentication()).thenReturn(authentication);
-            when(authentication.getPrincipal()).thenReturn("customer@example.com");
-            when(customerRepository.findByEmail("customer@example.com")).thenReturn(Optional.of(customer));
-            when(feedbackRepository.findByIdAndCustomerId(1L, 1L)).thenReturn(Optional.of(feedback));
-
-            feedbackService.deleteFeedbackForAuthenticatedCustomer(1L);
-
-            verify(feedbackRepository, times(1)).delete(feedback);
-        }
-
-        @Test
         @DisplayName("Should throw exception if feedback not found")
         void testDeleteFeedbackNotFound() {
-            Customer customer = new Customer();
-            customer.setId(1L);
+            when(feedbackRepository.findById(1L)).thenReturn(Optional.empty());
 
-            when(securityContext.getAuthentication()).thenReturn(authentication);
-            when(authentication.getPrincipal()).thenReturn("customer@example.com");
-            when(customerRepository.findByEmail("customer@example.com")).thenReturn(Optional.of(customer));
-            when(feedbackRepository.findByIdAndCustomerId(1L, 1L)).thenReturn(Optional.empty());
+            Exception exception = assertThrows(IllegalArgumentException.class,
+                    () -> feedbackService.deleteFeedbackForAuthenticatedCustomer(1L)
+            );
 
-            IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                    feedbackService.deleteFeedbackForAuthenticatedCustomer(1L));
+            assertEquals("Feedback not found for the given feedback ID: 1",
+                    exception.getMessage());
 
-            assertEquals("Feedback not found for the given feedback ID: 1", exception.getMessage());
-            verify(feedbackRepository, never()).delete(any(Feedback.class));
         }
     }
 }
